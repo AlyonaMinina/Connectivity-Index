@@ -49,13 +49,13 @@ if (regq) {
 	function CIquantification() {
 		setTool("rectangle");
 		Stack.setChannel(1);
-		Stack.setFrame(n)(frame1);
+		Stack.setFrame(frame1);
 		waitForUser("Please select an area to be anlyzed");
 		run("Crop");
 		croppedx = getWidth();
 		centerx = croppedx*0.5;
 		croppedy = getHeight();
-		centery = croppedy*0.5
+		centery = croppedy*0.5;
 		run("Gaussian Blur...", "sigma=Gaussian_Blur stack");
 		run("royal");
 		run("Set... ", "zoom=200");
@@ -78,13 +78,18 @@ if (regq) {
 		roiManager("Rename", "reference area");
 		
 		Stack.setChannel(1);
-		Stack.setFrame(n)(frame1);
+		Stack.setFrame(frame1);
 		waitForUser("Select ROI", "Please position the selections to the corresponding areas");
 		run("Split Channels");
 		close("C2-*");	
 		roiManager("Select", newArray(0,1,2));
+		Stack.setFrame(frame1);
 		run("Set Measurements...", "integrated redirect=None decimal=3");
-		roiManager("Measure");            
+		roiManager("Measure");        
+		roiManager("Select", newArray(0,1,2));
+		Stack.setFrame(frame1 +1);
+		run("Set Measurements...", "integrated redirect=None decimal=3");
+		roiManager("Measure");       
         
 //Calculate intensity drop in the photobleached area of the vacuole as % of this are intentisy before photobleaching
         A1 = getResult("RawIntDen",0); // fluorescence intensity right before photobleaching
