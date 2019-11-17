@@ -95,26 +95,31 @@ if (regq) {
         A1 = getResult("RawIntDen",0); // fluorescence intensity right before photobleaching
         A2 = getResult("RawIntDen",3); // fluorescence intensity right after photobleaching
         dA = 100*(A1-A2)/A1; // change in intensity, %
-        //print(dA);
+       print("dA ", dA);
 //Calculate intensity drop in the not photobleached area of the same vacuole as % of this area intentisy before photobleaching
         B1 = getResult("RawIntDen",1); 
         B2 = getResult("RawIntDen",4); 
         dB = 100*(B1-B2)/B1; 
-        //print(dB);
+       print("dB ", dB);
 //Calculate intensity drop in the vacuole of neighbouring cell as % of this area intentisy before photobleaching
         C1 = getResult("RawIntDen",2); 
         C2 = getResult("RawIntDen",5); 
         C = 100*(C1-C2)/C1; //if experiment is carried out correctly, this should be a small value. It might be negative due to small drift of the vacuole during the time that takes to photobleach and scan one frame 
-        dC = abs(C); // set the vaclue as always positive
-        //print(dC);
+        dC = abs(C); // set the value as always positive
+       print("dC ", dC);
 //Relative loss of fluorescence within the vacuole, comparing photobleached and non-photobleached areas (areas are in potentially connected parts of vacuole)
         Rel = dA-dB;
-        //print(Rel);
+       print("Rel ", Rel);
 //Reference loss of fluorescence, comapring photobleached are in one cell and non-photobleached in another (areas are in disconnected vacuoles)
         Ref = dA-dC;
-       //print(Ref);
+       print("Ref ", Ref);
 //Caclulate Connectivity Index
-        CI = Rel/Ref;
+//negative CI indicates that non-photobleached area lossed more signal than the photobleached area => technical issues, most probably drift during scanning
+//CI = 0 indicates that photobleached and not photobleached areas are not connected
+//CI = 1 indicates that photobleached and not photobleached areas are fully connected and diffusion rate between them is equal to the scanning speed
+//CI >1 indicates that there is a technical issue, most probably drift during scanning
+//Cut off CI value to consider vacuoles connected should be estimated empirically by selecting vacuolar areas in three cells. I tis set to 0.2 for this experiment
+        CI = (Ref-Rel)/Ref;
         print(name, CI);
         selectWindow("ROI Manager");
         run("Close"); 
@@ -127,3 +132,4 @@ if (regq) {
 selectWindow("Log");
 saveAs(dir + name +" CIquantification.txt ");   
 run("Close"); 
+close();
